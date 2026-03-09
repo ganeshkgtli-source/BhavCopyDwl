@@ -637,11 +637,7 @@ def get_temp_deleted_files():
     return files
 
 
-# Example usage
-# files = get_temp_deleted_files()
-# print("Temporarily deleted files:")
-# for file in files:
-#     print(file)
+ 
 
 
 @app.route("/trash")
