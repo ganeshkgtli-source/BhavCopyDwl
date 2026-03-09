@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Download Logs</title>
+
+<style>
+
+/* GLOBAL */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI, Arial, sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#1e1f25,#2f3136);
+color:white;
+min-height:100vh;
+}
+
+
+/* NAVBAR */
+
+.navbar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:linear-gradient(90deg,#1f1f1f,#2c2c2c);
+padding:14px 30px;
+box-shadow:0 2px 10px rgba(0,0,0,0.5);
+}
+
+.logo{
+font-size:20px;
+font-weight:700;
+letter-spacing:1px;
+}
+
+.logo span{
+color:#ff4d4d;
+}
+
+.nav-links{
+display:flex;
+gap:15px;
+}
+
+.nav-links a{
+text-decoration:none;
+}
+
+.nav-links button{
+border:none;
+padding:7px 14px;
+border-radius:6px;
+cursor:pointer;
+font-size:13px;
+background:#007bff;
+color:white;
+transition:0.2s;
+}
+
+.nav-links button:hover{
+background:#0056b3;
+transform:translateY(-1px);
+}
+
+
+/* PAGE TITLE */
+
+.page-title{
+text-align:center;
+font-size:26px;
+margin-top:30px;
+margin-bottom:10px;
+font-weight:600;
+}
+
+
+/* TABLE CONTAINER */
+
+.table-container{
+width:95%;
+margin:20px auto;
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 6px 20px rgba(0,0,0,0.3);
+}
+
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+color:#333;
+}
+
+
+/* HEADER */
+
+thead{
+background:#007bff;
+color:white;
+position:sticky;
+top:0;
+}
+
+th{
+padding:12px;
+text-align:left;
+font-size:14px;
+}
+
+
+/* BODY */
+
+td{
+padding:12px;
+border-bottom:1px solid #eee;
+font-size:14px;
+}
+
+
+/* ROW STRIPES */
+
+tbody tr:nth-child(even){
+background:#f7f7f7;
+}
+
+tbody tr:hover{
+background:#e9f2ff;
+transition:0.2s;
+}
+
+
+/* STATUS BADGES */
+
+.status-success{
+background:#4caf50;
+color:white;
+padding:4px 10px;
+border-radius:12px;
+font-size:12px;
+}
+
+.status-failed{
+background:#e53935;
+color:white;
+padding:4px 10px;
+border-radius:12px;
+font-size:12px;
+}
+
+
+/* FOOTER BUTTON */
+
+.footer{
+text-align:center;
+margin:25px;
+}
+
+.footer button{
+border:none;
+padding:10px 20px;
+border-radius:6px;
+background:#007bff;
+color:white;
+font-size:14px;
+cursor:pointer;
+}
+
+.footer button:hover{
+background:#0056b3;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<div class="logo">
+<span>T</span>IME
+<span>L</span>INE
+<span>I</span>NVESTMENTS
+<span>P</span>VT
+<span>L</span>TD
+</div>
+
+<div class="nav-links">
+
+    <a href="/">
+    <button>Home</button>
+    </a>
+<a href="/files">
+<button>Files</button>
+</a>
+
+<a href="/logs">
+<button>Live Logs</button>
+</a>
+<!-- <a href="/trash">
+<button class="btn trash">Trash</button>
+</a> -->
+
+
+</div>
+
+</div>
+
+
+
+<!-- TITLE -->
+
+<!-- TABLE -->
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+<th>File Name</th>
+<th>Trade Date</th>
+<th>Week Day</th>
+<th>Status</th>
+<th>Downloaded Time</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for log in logs %}
+
+<tr>
+
+<td>{{log[0]}}</td>
+
+<td>{{log[1]}}</td>
+
+<td>{{log[2]}}</td>
+
+<td>
+
+{% if log[3] == "Downloaded" %}
+<span class="status-success">{{log[3]}}</span>
+
+{% else %}
+<span class="status-failed">{{log[3]}}</span>
+
+{% endif %}
+
+</td>
+
+<td>{{log[4]}}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- FOOTER -->
+
+<div class="footer">
+
+
+
+</div>
+
+
+</body>
+</html>

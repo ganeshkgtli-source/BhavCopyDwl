@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Download All Years Logs</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI, monospace;
+}
+
+body{
+background:linear-gradient(135deg,#1e1f25,#2f3136);
+color:white;
+min-height:100vh;
+}
+
+
+/* NAVBAR */
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#202225;
+padding:14px 30px;
+box-shadow:0 2px 10px rgba(0,0,0,0.5);
+}
+
+.logo{
+font-size:20px;
+font-weight:700;
+}
+
+.logo span{
+color:#ff4d4d;
+}
+
+.nav-buttons button{
+border:none;
+padding:7px 14px;
+margin-left:10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.home{background:#1e88e5;color:white;}
+.files{background:#43a047;color:white;}
+
+.nav-buttons button:hover{
+opacity:0.9;
+}
+
+
+/* TITLE */
+
+.title{
+text-align:center;
+font-size:24px;
+margin-top:25px;
+margin-bottom:20px;
+}
+
+
+/* LOG CONTAINER */
+
+.log-container{
+width:95%;
+margin:auto;
+background:#111;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.5);
+overflow:hidden;
+}
+
+.log-header{
+background:#222;
+padding:10px 15px;
+font-size:13px;
+color:#aaa;
+}
+
+#logBox{
+padding:15px;
+height:500px;
+overflow-y:auto;
+font-size:13px;
+line-height:1.6;
+}
+
+
+/* LOG COLORS */
+
+.download{color:#4da6ff;}
+.success{color:#00ff7f;}
+.error{color:#ff4d4d;}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+<div class="logo">
+<span>T</span>IME
+<span>L</span>INE
+<span>I</span>NVESTMENTS
+<span>P</span>VT
+<span>L</span>TD
+</div>
+
+<div class="nav-buttons">
+<button class="home" onclick="goHome()">Home</button>
+<button class="home" onclick="goFiles()">Files</button>
+<!-- <a href="/trash">
+<button class="btn  home">Trash</button>
+</a> -->
+
+<a href="/log-dashboard" ><button class="btn home">History</button></a>
+</div>
+
+</div>
+
+
+<h2 class="title">Live Download Console</h2>
+
+
+<div class="log-container">
+
+ 
+
+<div id="logBox"></div>
+
+</div>
+
+
+<script>
+
+const logBox=document.getElementById("logBox")
+
+const source=new EventSource("/stream-all-logs")
+
+source.onmessage=function(event){
+
+let text=event.data
+let colorClass=""
+
+if(text.includes("Downloading")){
+colorClass="download"
+}
+else if(text.includes("Downloaded") || text.includes("Saved") || text.includes("Completed year")){
+colorClass="success"
+}
+else if(text.includes("not available") || text.includes("Error")){
+colorClass="error"
+}
+
+logBox.innerHTML+=`<div class="${colorClass}">${text}</div>`
+
+logBox.scrollTop=logBox.scrollHeight
+
+if(text.includes("Completed all years")){
+source.close()
+}
+
+}
+
+function goHome(){
+window.location.href="/"
+}
+
+function goFiles(){
+window.location.href="/files"
+}
+
+</script>
+
+</body>
+</html>

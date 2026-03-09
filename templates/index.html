@@ -1,0 +1,259 @@
+<!doctype html>
+<html>
+<head>
+<title>BSE Bhavcopy Downloader</title>
+
+<style>
+
+/* GLOBAL */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#1e1f25,#2f3136);
+color:white;
+min-height:100vh;
+}
+
+
+/* NAVBAR */
+
+.navbar{
+width:100%;
+background:#202225;
+padding:15px 40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 2px 10px rgba(0,0,0,0.5);
+}
+
+.logo{
+font-size:20px;
+font-weight:bold;
+letter-spacing:1px;
+}
+
+.logo span{
+color:#ff4d4d;
+}
+
+.nav-links{
+display:flex;
+gap:25px;
+}
+
+.nav-links a{
+text-decoration:none;
+color:white;
+font-size:14px;
+padding:8px 14px;
+border-radius:6px;
+transition:0.3s;
+}
+
+.nav-links a:hover{
+background:#007bff;
+}
+
+
+/* MAIN CONTAINER */
+
+.main{
+display:flex;
+justify-content:center;
+align-items:center;
+margin-top:80px;
+}
+
+.container{
+background:#2b2d31;
+width:460px;
+padding:35px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.4);
+}
+
+
+/* TITLE */
+
+.title{
+text-align:center;
+font-size:22px;
+margin-bottom:30px;
+}
+
+.red{
+color:#ff4d4d;
+}
+
+
+/* INPUTS */
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+margin-bottom:12px;
+border-radius:6px;
+border:1px solid #444;
+background:#36393f;
+color:white;
+font-size:14px;
+}
+
+input:focus{
+outline:none;
+border-color:#007bff;
+}
+
+
+/* BUTTONS */
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:6px;
+background:#1f6fc4;
+color:white;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#0056b3;
+transform:scale(1.02);
+}
+
+.section{
+margin-top:15px;
+}
+
+
+/* MESSAGE */
+
+.message{
+margin-top:20px;
+color:#00ff9d;
+font-weight:bold;
+text-align:center;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<div class="logo">
+<span>T</span>IME
+<span>L</span>INE
+<span>I</span>NVESTMENTS
+<span>P</span>VT
+<span>L</span>TD
+</div>
+
+<div class="nav-links">
+<a href="/files">Files</a>
+<a href="/logs">Logs</a>
+<!-- <a href="/trash">
+ Trash 
+</a> -->
+<a href="/log-dashboard">  History</a>
+</div>
+
+</div>
+
+
+
+<!-- MAIN CONTENT -->
+
+<div class="main">
+
+<div class="container">
+
+<h2 class="title">
+Bhavcopy Downloader
+</h2>
+
+<form method="POST">
+
+<div class="section">
+<input type="date" name="date">
+
+<button type="submit" name="download_date">
+Download Selected Date
+</button>
+</div>
+
+
+<div class="section">
+
+<input type="number" name="year" placeholder="Enter Year (e.g. 2023)">
+
+<button type="button" onclick="startYearDownload()">
+Download Complete Year
+</button>
+
+</div>
+
+
+<div class="section">
+
+<button type="button" onclick="downloadAllYears()">
+Download All Data Till Today
+</button>
+
+</div>
+
+</form>
+
+
+{% if message %}
+<div class="message">{{ message }}</div>
+{% endif %}
+
+</div>
+
+</div>
+
+
+
+<script>
+
+function startYearDownload(){
+
+let year=document.querySelector("input[name='year']").value;
+
+if(!year){
+alert("Enter a year");
+return;
+}
+
+window.location.href="/logs/"+year;
+
+}
+
+
+function downloadAllYears(){
+window.location.href="/logs-all";
+}
+
+</script>
+
+
+</body>
+</html>
