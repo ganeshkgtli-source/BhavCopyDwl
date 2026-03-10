@@ -440,6 +440,9 @@ def download_selected():
 
     saved_count = 0
 
+    # System Downloads folder
+    downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+
     for file_id in selected_ids:
 
         cursor.execute("""
@@ -455,7 +458,8 @@ def download_selected():
             file_name, year, month, file_data = row
 
             save_folder = os.path.join(
-                DOWNLOAD_BASE,
+                downloads_folder,
+                "Bhavcopy",
                 str(year),
                 month
             )
@@ -472,13 +476,13 @@ def download_selected():
     conn.close()
 
     return jsonify({
-        "success": f"{saved_count} files downloaded"
+        "success": f"{saved_count} files saved to Downloads/Bhavcopy"
     })
-
 
  
 # DELETE FILES
  
+
 @app.route("/delete-selected", methods=["POST"])
 def delete_selected():
 
@@ -492,39 +496,54 @@ def delete_selected():
 
     deleted_count = 0
 
+    downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+
     for file_id in selected_ids:
 
         cursor.execute("""
             SELECT file_name, year, month
             FROM bhavcopy_files
-            WHERE id = ?
+            WHERE id=?
         """, (file_id,))
 
         row = cursor.fetchone()
 
         if row:
+
             file_name, year, month = row
 
-            cursor.execute("DELETE FROM bhavcopy_files WHERE id = ?", (file_id,))
-            deleted_count += 1
-
+            # Delete from main table
             cursor.execute(
-    "DELETE FROM download_logs WHERE file_name=?",
-    (file_name,)
-)
+                "DELETE FROM bhavcopy_files WHERE id=?",
+                (file_id,)
+            )
 
-            # Delete from Downloaded folder
-            downloaded_path = os.path.join(DOWNLOAD_BASE, str(year), month, file_name)
-            if os.path.exists(downloaded_path):
-                os.remove(downloaded_path)
+            # Delete from logs
+            cursor.execute(
+                "DELETE FROM download_logs WHERE file_name=?",
+                (file_name,)
+            )
+
+            # Delete from Downloads folder
+            file_path = os.path.join(
+                downloads_folder,
+                "Bhavcopy",
+                str(year),
+                month,
+                file_name
+            )
+
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+            deleted_count += 1
 
     conn.commit()
     conn.close()
 
     return jsonify({
-        "message": f"{deleted_count} file(s) deleted"
+        "message": f"{deleted_count} file(s) permanently deleted"
     })
-
 
 @app.route("/delete-temp", methods=["POST"])
 def delete_temp():
@@ -532,22 +551,29 @@ def delete_temp():
     selected_ids = request.form.getlist("file_ids")
 
     if not selected_ids:
-        return jsonify({"error":"No files selected"}),400
+        return jsonify({"error": "No files selected"}), 400
 
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
+    updated_count = 0
+
     for file_id in selected_ids:
 
-        cursor.execute(
-            "UPDATE bhavcopy_files SET is_deleted=1 WHERE id=?",
-            (file_id,)
-        )
+        cursor.execute("""
+            UPDATE bhavcopy_files
+            SET is_deleted = 1
+            WHERE id = ?
+        """, (file_id,))
+
+        updated_count += 1
 
     conn.commit()
     conn.close()
 
-    return jsonify({"message":"Files moved to temporary delete"})
+    return jsonify({
+        "message": f"{updated_count} file(s) moved to Trash"
+    })
 
 @app.route("/stream-all-logs")
 def stream_all_logs():
