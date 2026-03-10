@@ -52,7 +52,7 @@ def init_db():
 
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-
+    #filesdb
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS bhavcopy_files (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,6 +64,7 @@ def init_db():
             is_deleted INTEGER DEFAULT 0
         )
     """)
+    #logsdb
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS download_logs(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
