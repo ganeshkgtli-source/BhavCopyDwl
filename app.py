@@ -436,54 +436,44 @@ def download_selected():
     selected_ids = request.form.getlist("file_ids")
 
     if not selected_ids:
-        return jsonify({"error": "No files selected"}), 400
+        return "No files selected", 400
 
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    files = []
-
-    for file_id in selected_ids:
-
-        cursor.execute("""
-            SELECT file_name, file_data
-            FROM bhavcopy_files
-            WHERE id=?
-        """, (file_id,))
-
-        row = cursor.fetchone()
-
-        if row:
-            files.append(row)
-
-    conn.close()
-
-    if len(files) == 1:
-
-        file_name, file_data = files[0]
-
-        return send_file(
-            io.BytesIO(file_data),
-            download_name=file_name,
-            as_attachment=True
-        )
-
-    # Multiple files → zip download
     zip_buffer = io.BytesIO()
 
-    with zipfile.ZipFile(zip_buffer, "w") as z:
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as z:
 
-        for file_name, file_data in files:
-            z.writestr(file_name, file_data)
+        for file_id in selected_ids:
+
+            cursor.execute("""
+                SELECT file_name, year, month, file_data
+                FROM bhavcopy_files
+                WHERE id=?
+            """, (file_id,))
+
+            row = cursor.fetchone()
+
+            if row:
+
+                file_name, year, month, file_data = row
+
+                # Create folder structure inside zip
+                zip_path = f"Bhavcopy/{year}/{month}/{file_name}"
+
+                z.writestr(zip_path, file_data)
+
+    conn.close()
 
     zip_buffer.seek(0)
 
     return send_file(
         zip_buffer,
-        download_name="bhavcopy_files.zip",
-        as_attachment=True
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name="Bhavcopy_Files.zip"
     )
- 
 # DELETE FILES
  
 
