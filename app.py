@@ -6,11 +6,11 @@ import sqlite3
 import os
 import pandas as pd
 
-from flask import Flask, render_template, request, jsonify, Response, redirect
+from flask import Flask, render_template, request, jsonify, Response, redirect,send_file
 
 app = Flask(__name__)
 
-DOWNLOAD_BASE = "Downloaded"
+# DOWNLOAD_BASE = "Downloaded"
 DB_NAME = "bhavcopy_files.db"
 
 DOWNLOAD_STATE = {}
@@ -435,18 +435,18 @@ def download_selected():
 
     selected_ids = request.form.getlist("file_ids")
 
+    if not selected_ids:
+        return jsonify({"error": "No files selected"}), 400
+
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    saved_count = 0
-
-    # System Downloads folder
-    downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+    files = []
 
     for file_id in selected_ids:
 
         cursor.execute("""
-            SELECT file_name, year, month, file_data
+            SELECT file_name, file_data
             FROM bhavcopy_files
             WHERE id=?
         """, (file_id,))
@@ -454,31 +454,35 @@ def download_selected():
         row = cursor.fetchone()
 
         if row:
-
-            file_name, year, month, file_data = row
-
-            save_folder = os.path.join(
-                downloads_folder,
-                "Bhavcopy",
-                str(year),
-                month
-            )
-
-            os.makedirs(save_folder, exist_ok=True)
-
-            file_path = os.path.join(save_folder, file_name)
-
-            with open(file_path, "wb") as f:
-                f.write(file_data)
-
-            saved_count += 1
+            files.append(row)
 
     conn.close()
 
-    return jsonify({
-        "success": f"{saved_count} files saved to Downloads/Bhavcopy"
-    })
+    if len(files) == 1:
 
+        file_name, file_data = files[0]
+
+        return send_file(
+            io.BytesIO(file_data),
+            download_name=file_name,
+            as_attachment=True
+        )
+
+    # Multiple files → zip download
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w") as z:
+
+        for file_name, file_data in files:
+            z.writestr(file_name, file_data)
+
+    zip_buffer.seek(0)
+
+    return send_file(
+        zip_buffer,
+        download_name="bhavcopy_files.zip",
+        as_attachment=True
+    )
  
 # DELETE FILES
  
