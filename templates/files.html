@@ -337,24 +337,28 @@ return ids;
 
 function downloadSelected(){
 
-let ids=getSelectedIds();
+let ids = getSelectedIds();
 
 if(ids.length==0){
 alert("Select files first");
 return;
 }
 
-let formData=new URLSearchParams();
+let form = document.createElement("form");
 
-ids.forEach(id=>formData.append("file_ids",id));
+form.method = "POST";
+form.action = "/download-selected";
 
-fetch("/download-selected",{
-method:"POST",
-headers:{'Content-Type':'application/x-www-form-urlencoded'},
-body:formData
-})
-.then(res=>res.json())
-.then(data=>alert(data.success));
+ids.forEach(id=>{
+let input = document.createElement("input");
+input.type = "hidden";
+input.name = "file_ids";
+input.value = id;
+form.appendChild(input);
+});
+
+document.body.appendChild(form);
+form.submit();
 
 }
 
